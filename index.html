@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bin Bao — Tech Lead, PyTorch Compiler</title>
+<meta name="description" content="Bin Bao is a tech lead on the PyTorch compiler and the creator of AOTInductor, PyTorch's ahead-of-time compiler for deploying models without Python.">
+<meta name="theme-color" content="#101512">
+<meta property="og:title" content="Bin Bao — Tech Lead, PyTorch Compiler">
+<meta property="og:description" content="Creator of AOTInductor. Five years building the layers that turn PyTorch programs into fast, deployable code.">
+<meta property="og:type" content="website">
+<style>
+:root {
+  color-scheme: dark;
+  --surface-0: #101512;
+  --surface-1: #19201b;
+  --border: #344137;
+  --text-primary: #f5f7ec;
+  --text-secondary: #b5c0b2;
+  --text-muted: #8e9f8f;
+  --accent: #c2ee80;
+  --accent-ink: #c2ee80;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --surface-0: #f4f5eb;
+  --surface-1: #fffef7;
+  --border: #cbd5c4;
+  --text-primary: #16221a;
+  --text-secondary: #455448;
+  --text-muted: #5b6c5e;
+  --accent: #355e24;
+  --accent-ink: #31581f;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body {
+  margin: 0;
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 4px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 36px; }
+.skip { position: absolute; top: -60px; left: 16px; z-index: 100; background: var(--accent); color: var(--surface-0); padding: 8px 16px; }
+.skip:focus { top: 12px; }
+
+nav { position: sticky; top: 0; z-index: 10; background: var(--surface-0); border-bottom: 1px solid var(--border); }
+nav .wrap { display: flex; align-items: center; gap: 28px; min-height: 72px; }
+nav .brand { font-weight: 750; letter-spacing: -0.045em; font-size: 21px; color: var(--text-primary); margin-right: auto; }
+nav .brand span { color: var(--accent-ink); }
+nav a.link { color: var(--text-secondary); font-size: 13px; font-weight: 600; }
+#theme-toggle {
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: 100px;
+  color: var(--text-primary); padding: 5px 13px; font: inherit; font-size: 12px; cursor: pointer;
+}
+
+header.hero { position: relative; overflow: hidden; padding: 104px 0 70px; }
+header.hero::before { content: ""; pointer-events: none; position: absolute; inset: 0 0 auto auto; width: 62%; height: 100%; opacity: 0.35; background-image: radial-gradient(var(--border) 1px, transparent 1px); background-size: 24px 24px; mask-image: linear-gradient(90deg, transparent, black); }
+.hero-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr); align-items: center; gap: 8%; }
+.eyebrow, .section-label { color: var(--accent-ink); font-weight: 650; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; letter-spacing: 0.11em; text-transform: uppercase; }
+.eyebrow::before { content: "●"; font-size: 9px; vertical-align: 2px; margin-right: 10px; }
+h1 { font-size: clamp(46px, 5.5vw, 76px); line-height: 1.04; margin: 22px 0 26px; letter-spacing: -0.065em; max-width: 860px; }
+h1 em { color: var(--accent-ink); font-style: normal; }
+.lede { font-size: 18px; color: var(--text-secondary); max-width: 620px; margin: 0; line-height: 1.7; }
+.lede strong { color: var(--text-primary); }
+.cta { margin-top: 34px; display: flex; gap: 12px; flex-wrap: wrap; }
+.btn { display: inline-block; padding: 11px 19px; border-radius: 4px; font-weight: 650; font-size: 14px; border: 1px solid var(--border); color: var(--text-primary); background: var(--surface-1); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface-0); }
+.btn:hover { text-decoration: none; transform: translateY(-2px); }
+
+.pipeline { background: var(--surface-1); border: 1px solid var(--border); box-shadow: 16px 16px 0 -1px var(--surface-0), 16px 16px 0 var(--border); }
+.pipeline-head { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: 11px; letter-spacing: .08em; }
+.pipeline-head .dots { color: var(--accent-ink); letter-spacing: 5px; }
+.pipeline-body { padding: 29px 28px 27px; }
+.pipeline-step { display: grid; grid-template-columns: 32px 1fr; gap: 17px; position: relative; padding: 0 0 30px; }
+.pipeline-step:not(:last-of-type)::after { content: ""; position: absolute; left: 15px; top: 30px; bottom: 0; border-left: 1px dashed var(--border); }
+.pipeline-step:last-of-type { padding-bottom: 0; }
+.pipeline-num { border: 1px solid var(--border); width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--accent-ink); background: var(--surface-1); font-size: 11px; z-index: 1; }
+.pipeline-step strong { display: block; font-size: 14px; line-height: 1.4; margin: 0 0 3px; }
+.pipeline-step small { display: block; color: var(--text-muted); font-size: 12px; }
+.pipeline-end { border-top: 1px solid var(--border); margin-top: 30px; padding-top: 17px; color: var(--accent-ink); font-size: 11px; letter-spacing: .04em; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 100px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.stat { padding: 24px 30px 27px; }
+.stat:first-child { padding-left: 0; }
+.stat + .stat { border-left: 1px solid var(--border); }
+.stat .v { font-size: clamp(33px, 4vw, 48px); font-weight: 650; line-height: 1.2; letter-spacing: -0.055em; }
+.stat .k { color: var(--text-secondary); font-size: 12px; letter-spacing: .025em; }
+
+section { padding: 104px 0; border-top: 1px solid var(--border); }
+h2 { font-size: clamp(32px, 4vw, 48px); line-height: 1.14; margin: 12px 0 40px; letter-spacing: -0.045em; max-width: 820px; }
+
+.work { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.card { display: flex; flex-direction: column; background: var(--surface-1); border: 1px solid var(--border); border-radius: 4px; padding: 32px; }
+.card .tag { color: var(--accent-ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.card h3 { margin: 14px 0; font-size: 24px; letter-spacing: -0.035em; line-height: 1.25; }
+.card p { color: var(--text-secondary); margin: 0 0 24px; }
+.card .more { margin-top: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+
+.lead-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 64px; align-items: start; }
+.lead-grid p { color: var(--text-secondary); font-size: 18px; line-height: 1.7; margin: 0 0 20px; }
+.lead-grid p strong { color: var(--text-primary); }
+.skills { display: grid; gap: 22px; }
+.skills h3 { margin: 0 0 8px; font-size: 13px; color: var(--text-muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.skills span { display: inline-block; margin: 0 8px 8px 0; padding: 4px 12px; border: 1px solid var(--border); border-radius: 100px; font-size: 13px; color: var(--text-secondary); }
+
+.path { list-style: none; margin: 0; padding: 0; max-width: 900px; }
+.path li { display: grid; grid-template-columns: 160px 1fr; gap: 28px; padding: 18px 0; border-top: 1px solid var(--border); }
+.path li:first-child { border-top: none; }
+.path .when { color: var(--accent-ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; padding-top: 2px; }
+.path .what { font-size: 18px; letter-spacing: -.01em; }
+
+footer { padding: 72px 0 64px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 14px; }
+footer .cta { margin: 20px 0 56px; }
+footer .meta { display: flex; justify-content: space-between; gap: 30px; border-top: 1px solid var(--border); padding-top: 24px; flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  .hero-grid, .lead-grid { grid-template-columns: 1fr; gap: 52px; }
+  .pipeline { max-width: 600px; }
+  .work { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .wrap { padding: 0 20px; }
+  nav .wrap { gap: 15px; min-height: 62px; }
+  nav a.link { display: none; }
+  header.hero { padding: 69px 0 50px; }
+  header.hero::before { width: 100%; }
+  h1 { font-size: clamp(42px, 11vw, 61px); }
+  .lede { font-size: 16px; }
+  .pipeline-body { padding: 22px; }
+  .stats { grid-template-columns: 1fr; margin-top: 70px; }
+  .stat, .stat:first-child { padding: 16px 0; }
+  .stat + .stat { border-left: none; border-top: 1px solid var(--border); }
+  section { padding: 75px 0; }
+  .card { padding: 25px; }
+  .path li { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn:hover { transform: none; } }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<nav aria-label="Main navigation">
+  <div class="wrap">
+    <a class="brand" href="#">bin<span>.</span>bao</a>
+    <a class="link" href="#work">Work</a>
+    <a class="link" href="#leadership">Leadership</a>
+    <a class="link" href="#path">Path</a>
+    <a class="link" href="#contact">Elsewhere</a>
+    <button id="theme-toggle" type="button" aria-label="Switch to light theme" aria-pressed="false">Light mode</button>
+  </div>
+</nav>
+
+<main id="main">
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">Bin Bao / Tech Lead, PyTorch Compiler</div>
+        <h1>The infrastructure between <em>model</em> and <em>machine.</em></h1>
+        <p class="lede">I created <strong>AOTInductor</strong>, PyTorch's ahead-of-time compiler for deploying models without Python, and I'm the tech lead behind it. For five years I've worked on the layers that turn PyTorch programs into fast, deployable code. That runs from getting TorchInductor ready for PyTorch 2.0 to bringing these technologies into production at Meta.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://www.linkedin.com/in/bin-bao-9b095812/">LinkedIn ↗</a>
+          <a class="btn" href="https://github.com/desertfire">GitHub</a>
+        </div>
+      </div>
+      <div class="pipeline" role="group" aria-label="The AOTInductor deployment pipeline from export to execution">
+        <div class="pipeline-head mono"><span>AOTINDUCTOR</span><span class="dots" aria-hidden="true">●●●</span></div>
+        <div class="pipeline-body">
+          <div class="pipeline-step"><div class="pipeline-num mono">01</div><div><strong>Capture the model</strong><small class="mono">torch.export → graph</small></div></div>
+          <div class="pipeline-step"><div class="pipeline-num mono">02</div><div><strong>Compile ahead of time</strong><small class="mono">Inductor → optimized kernels</small></div></div>
+          <div class="pipeline-step"><div class="pipeline-num mono">03</div><div><strong>Package the artifact</strong><small class="mono">shared library + stable C ABI</small></div></div>
+          <div class="pipeline-step"><div class="pipeline-num mono">04</div><div><strong>Run where it matters</strong><small class="mono">C++ host → GPU / CPU</small></div></div>
+          <div class="pipeline-end mono">// NO PYTHON REQUIRED AT SERVING TIME</div>
+        </div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="v">840+</div><div class="k">PRs landed in PyTorch</div></div>
+      <div class="stat"><div class="v">1,300+</div><div class="k">Code reviews</div></div>
+      <div class="stat"><div class="v">Creator</div><div class="k">of AOTInductor</div></div>
+    </div>
+  </div>
+</header>
+
+<section id="work">
+  <div class="wrap">
+    <div class="section-label">01 / Signature work</div>
+    <h2>Three things I've built, and why they matter.</h2>
+    <div class="work">
+      <div class="card">
+        <div class="tag">Deployment</div>
+        <h3>AOTInductor: deploy PyTorch without Python.</h3>
+        <p>I created AOTInductor and lead its development. It compiles an exported PyTorch model into a self-contained artifact behind a stable C ABI. That artifact can be served from C++ and stays portable across GPU architectures and PyTorch releases. It has been widely adopted for production deployment, replacing earlier generations of native deployment solutions.</p>
+        <a class="more" href="https://github.com/pytorch/pytorch/pulls?q=is%3Apr+author%3Adesertfire+label%3AMerged+AOTI">See the PRs →</a>
+      </div>
+      <div class="card">
+        <div class="tag">PyTorch 2.0</div>
+        <h3>TorchInductor: from prototype to PyTorch 2.0.</h3>
+        <p>I joined TorchDynamo and TorchInductor in 2022, while they were still a prototype in a separate repo. I worked across the compiler: scheduling, op lowerings, and a long tail of codegen correctness. I also built the quality bar it shipped against: model-suite CI, accuracy checks, and PyTorch's core test suites running under Inductor. Later I built the nightly PT2 performance dashboard that tracks speedup, compile time, and memory.</p>
+        <a class="more" href="https://github.com/pytorch/torchdynamo/pulls?q=is%3Apr+author%3Adesertfire">See the PRs →</a>
+      </div>
+      <div class="card">
+        <div class="tag">Runtime overhead</div>
+        <h3>Taking the host out of the hot path.</h3>
+        <p>I turned Inductor's C++ wrapper into a first-class mode for both JIT and AOT, removing Python from the kernel-launch path, and added lazy kernel compilation for faster cold starts. Now I'm driving CUDA Graphs and regional compilation, which give large models per-region control over how they're compiled and captured.</p>
+        <a class="more" href="https://github.com/pytorch/pytorch/pulls?q=is%3Apr+author%3Adesertfire+label%3AMerged+wrapper">See the PRs →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="leadership">
+  <div class="wrap">
+    <div class="section-label">02 / Leadership</div>
+    <h2>Leading the work, not just doing it.</h2>
+    <div class="lead-grid">
+      <div>
+        <p>As <strong>tech lead for AOTInductor and Inductor's C++ wrapper</strong>, I led the PyTorch engineers building them in open source. Today I lead a larger team driving <strong>production adoption of these technologies at Meta</strong>.</p>
+        <p>Along the way: 1,300+ code reviews, the AOTInductor tutorial and docs, and integrations with vLLM, ExecuTorch, and torchchat.</p>
+      </div>
+      <div class="skills">
+        <div><h3>ML compilers</h3><span>TorchInductor</span><span>TorchDynamo</span><span>Triton codegen</span><span>AOT compilation</span></div>
+        <div><h3>Runtime &amp; deployment</h3><span>C++ runtime</span><span>Stable C ABI</span><span>Model packaging</span><span>Multi-arch CUDA</span></div>
+        <div><h3>Performance</h3><span>CUDA Graphs</span><span>Autotuning</span><span>Compile-time optimization</span><span>CUTLASS</span></div>
+        <div><h3>Infrastructure</h3><span>Benchmarking</span><span>Performance CI</span><span>Correctness testing at scale</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="path">
+  <div class="wrap">
+    <div class="section-label">03 / Path</div>
+    <h2>Five years across PyTorch's compiler stack.</h2>
+    <ol class="path">
+      <li><div class="when">2025 → now</div><div class="what">Runtime overhead, large-model compilation, and production enablement</div></li>
+      <li><div class="when">2023 → 2025</div><div class="what">Created and led AOTInductor</div></li>
+      <li><div class="when">2022 → 2023</div><div class="what">TorchInductor, from prototype to PyTorch 2.0</div></li>
+      <li><div class="when">2021 → 2022</div><div class="what">TorchScript and Lazy Tensor Core</div></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="section-label">04 / Elsewhere</div>
+    <div class="cta">
+      <a class="btn primary" href="https://www.linkedin.com/in/bin-bao-9b095812/">LinkedIn ↗</a>
+      <a class="btn" href="https://github.com/desertfire">GitHub</a>
+    </div>
+    <div class="meta">
+      <span>Bin Bao · Tech Lead, PyTorch Compiler</span>
+      <span>Counts from pytorch/pytorch and pytorch/torchdynamo, October 2026</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const root = document.documentElement;
+const themeToggle = document.getElementById("theme-toggle");
+themeToggle.addEventListener("click", () => {
+  const light = root.dataset.theme !== "light";
+  root.dataset.theme = light ? "light" : "dark";
+  themeToggle.textContent = light ? "Dark mode" : "Light mode";
+  themeToggle.setAttribute("aria-label", light ? "Switch to dark theme" : "Switch to light theme");
+  themeToggle.setAttribute("aria-pressed", String(light));
+});
+</script>
+</body>
+</html>
